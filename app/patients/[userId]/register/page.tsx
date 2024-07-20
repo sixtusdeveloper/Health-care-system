@@ -1,15 +1,17 @@
 import React from 'react';
 import Image from 'next/image';
-// import PatientForm from '@/components/forms/PatientForm';
-import { Link } from 'lucide-react';
+import RegisterForm from '@/components/forms/RegisterForm';
+import Link  from 'next/link';
+import { getUser } from '@/lib/actions/patient.actions';
 
-const Register = () => {
+const Register = async ({ params: { userId } }: SearchParamProps) => {
+    const user = await getUser(userId);
+
+
     return (
         <div className="flex h-screen max-h-screen">
             <section className="remove-scrollbar container my-auto">
-                <div className="sub-container max-w-[496px]">
-                    {/* TODO: OTP Verification | PasskeyModal */}
-                    
+                <div className="sub-container max-w-[496px]">  
                     <Image 
                     src="/assets/icons/logo-full.svg"
                     width={1000}
@@ -18,12 +20,12 @@ const Register = () => {
                     className="mb-12 h-10 w-fit"
                     />
 
-                    {/* <PatientForm /> */}
+                    <RegisterForm user={user} />
 
                     <div className="text-14-regular mt-20 flex justify-between">
                         <p className="justify-items-end text-dark-600 xl:text-left">&copy; 2024 developed by Sixtusdev</p>
                         <Link href="/?admin=true" className="text-green-500 ">
-                        Admin
+                          Admin
                         </Link>
                     </div>
                 </div>
@@ -40,4 +42,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default Register;    
