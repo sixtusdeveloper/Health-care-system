@@ -43,7 +43,7 @@ interface CustomProps {
 }
 
 const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
-   const { fieldType, iconSrc, iconAlt, placeholder } = props;
+   const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormate, renderSkeleton } = props;
 
     switch (fieldType) {
         case FormFieldType.INPUT:
@@ -83,6 +83,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                     />
                 </FormControl>
             );
+            // case Data Picker input field
         case FormFieldType.DATE_PICKER:
             return(
                 <div className="flex rounded-md border border-dark-500 bg-dark-400">
@@ -91,17 +92,26 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                        height={24}
                        width={24}
                        alt="calendar"
-                       className="mx-1"
+                       className="mx-2"
                     />
                     <FormControl>
-                        <input 
-                        placeholder={placeholder}
-                        {...field}
-                        className="shad-input border-0" 
+                        <DatePicker 
+                            selected={field.value}
+                            onChange={(date) => field.onChange(date)}
+                            dateFormat={dateFormate ?? "MM/dd/yyyy"}
+                            showTimeSelect={showTimeSelect ?? false}
+                            wrapperClassName="date-picker"
                         />
                     </FormControl>
                 </div>
-            )        
+            )   
+            // case FormFieldType.SKELETON:
+        case FormFieldType.SKELETON:  
+            return(
+                renderSkeleton ? renderSkeleton(field) : null
+            )   
+            // case Gender input field
+        case FormFieldType.SELECT:    
         default:
              
             break;
