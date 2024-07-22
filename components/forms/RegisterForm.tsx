@@ -7,10 +7,10 @@ import { z } from 'zod';
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl } from "@/components/ui/form";
-import { UserFormValidation } from '@/lib/validation';
+import { PatientFormValidation, UserFormValidation } from '@/lib/validation';
 import { useRouter } from 'next/navigation';
 import CustomFormField from "@/components/CustomFormField";
-import { createUser } from '@/lib/actions/patient.actions';
+import { createUser, registerPatient } from '@/lib/actions/patient.actions';
 import { FormFieldType } from './PatientForm';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '@radix-ui/react-label';
@@ -28,9 +28,10 @@ const RegisterForm = ({ user }: { user: User}) => {
   const [isLoading, setIsLoading] = useState(false); // Define isLoading state
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof UserFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+  const form = useForm<z.infer<typeof PatientFormValidation>>({
+    resolver: zodResolver(PatientFormValidation),
     defaultValues: {
+        ...PatientFormDefaultValues,
       name: "",
       email: "",
       phone: "",
@@ -38,15 +39,31 @@ const RegisterForm = ({ user }: { user: User}) => {
   })
  
   // 2. Define a submit handler.
-  async function onSubmit({ name, email, phone }: z.infer<typeof UserFormValidation>) {
+  async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
     setIsLoading(true);
+
+    let formData;
+    if(values.identificationDocument && values.identificationDocument.length > 0) {
+      const blobFile = new Blob([values.identificationDocument[0]], { type: values.identificationDocument[0].type });
+     
+        formData = new FormData();
+        formData.append('blobFile', blobFile);
+        formData.append('fileName', values.identificationDocument[0].name);
+    }
     
     try {
       // Your submit logic here
-      const userData = { name, email, phone }
-
-      const user = await createUser(userData);
-      if(user) router.push(`/patients/${user.$id}/register`);
+      const patientData = {
+        ...values,
+        userId: user.$id,
+        birthDate: new Date(values.birthDate),
+        identificationDocument: formData,
+      }
+      // @ts-ignore
+      const patient = await registerPatient(patientData);
+      
+      if(patient) router.push(`/patients/${user.$id}/new-appointment`);
+      
 
     } 
     catch (error) {
