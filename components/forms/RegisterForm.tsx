@@ -14,9 +14,11 @@ import { createUser } from '@/lib/actions/patient.actions';
 import { FormFieldType } from './PatientForm';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '@radix-ui/react-label';
-import { Doctors, GenderOptions } from '@/constants/index';
+import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues } from '@/constants/index';
 import SubmitButton from "../SubmitButton";
-import { SelectItem } from '@radix-ui/react-select';
+import { SelectItem } from "@/components/ui/select";
+import Image from 'next/image'; // Import the correct component for the Image element
+import FileUploader from '../FileUploader';
 
 
 
@@ -171,7 +173,7 @@ const RegisterForm = ({ user }: { user: User}) => {
                     fieldType={FormFieldType.INPUT}
                     control={form.control}  
                     name = "emergencyContactName"
-                    label = "Emergency contact name"
+                    label = "Emergency Contact Name"
                     placeholder = "Guardian's Name"
                 />
 
@@ -194,21 +196,178 @@ const RegisterForm = ({ user }: { user: User}) => {
             <CustomFormField
                 fieldType={FormFieldType.SELECT}
                 control={form.control}  
-                name = "primaryPhysician"
-                label = "Primary Physician"
-                placeholder = "Select a Physician"
+                name="primaryPhysician"
+                label="Primary physician"
+                placeholder="Select a Physician"
             >
                 {/* Select options */}
                 {Doctors.map((doctor) => (
                     <SelectItem key={doctor.name} value={doctor.name}>
-
+                        <div className="flex items-center cursor-pointer gap-2">
+                          <Image 
+                          src={doctor.image}
+                          width={32}
+                          height={32}
+                          alt={doctor.name}
+                          className="rounded-full border border-500"
+                          />
+                          <p>{doctor.name}</p>
+                        </div>
                     </SelectItem>
                 ))}
             </CustomFormField>
            
+            <div className='flex flex-col gap-6 xl:flex-row'>
+                {/* //    Insurance Information */}
+               <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}  
+                    name = "insuranceProvider"
+                    label = "Insurance Provider"
+                    placeholder = "BlueCross BlueShield"
+                />
+
+                <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}  
+                    name = "insurancePolicyNumber"
+                    label = "Insurance Policy Number"
+                    placeholder = "BCD-123-456-789"
+                />
+
+            </div>
+
+            <div className='flex flex-col gap-6 xl:flex-row'>
+                {/* //    Allergies */}
+               <CustomFormField
+                    fieldType={FormFieldType.TEXTAREA}
+                    control={form.control}  
+                    name = "allergies"
+                    label = "Allergies (if any)"
+                    placeholder = "Penicillin, Pollen, Peanuts"
+                />
+
+                <CustomFormField
+                    fieldType={FormFieldType.TEXTAREA}
+                    control={form.control}  
+                    name = "currentMedications"
+                    label = "Current Medications (if any)"
+                    placeholder = "Ibuprofen, Paracetamol 500mg, Aspirin"
+                />
+
+            </div>
+
+            <div className='flex flex-col gap-6 xl:flex-row'>
+                {/* //    Family Medical History */}
+               <CustomFormField
+                    fieldType={FormFieldType.TEXTAREA}
+                    control={form.control}  
+                    name = "familyMedicalHistory"
+                    label = "Family Medical History"
+                    placeholder = "Diabetes, Hypertension, Cancer"
+                />
+
+                <CustomFormField
+                    fieldType={FormFieldType.TEXTAREA}
+                    control={form.control}  
+                    name = "pastMedicalHistory"
+                    label = "Past Medical History"
+                    placeholder = "Asthma, Appendectomy, Tonsillectomy"
+                />
+
+            </div>
+            
+            <section className="space-y-6">
+                <div className='mb-9 space-y-1'>
+                <h2 className="sub-header">Identification and Verification</h2>
+                </div>
+            </section>
+            
+            {/* Identification Types*/}
+            <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}  
+                name="identificationType"
+                label="Identification Type"
+                placeholder="Select an Identification Type"
+            >
+                {/* Identification types */}
+                {IdentificationTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                        {type}
+                    </SelectItem>
+                ))}
+            </CustomFormField>
+
+            {/* FormField */}
+            <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}  
+                name = "identificationNumber"
+                label = "Identification Number"
+                placeholder = "0123456789"
+            />
+            
+            <CustomFormField
+                fieldType={FormFieldType.SKELETON}
+                control={form.control}  
+                name = "identificationDocument"
+                label = "Scanned Copy of Identification Document"
+                renderSkeleton={(field) => (
+                    <FormControl>
+                        <FileUploader files={field.value} onChange={field.onChange} />    
+                    </FormControl>
+                )}
+
+            />
+
+            <section className="space-y-6">
+                <div className='mb-9 space-y-1'>
+                <h2 className="sub-header">Consent and Privacy</h2>
+                </div>
+            </section>
+                
+                {/* Consent */}
+            {/* Treatment Consent */}
+            <CustomFormField
+                fieldType={FormFieldType.CHECKBOX}
+                control={form.control}  
+                name = "treatmentConsent"
+                label = "I consent to treatment"
+                renderSkeleton={(field) => (
+                    <FormControl>
+                        <FileUploader files={field.value} onChange={field.onChange} />    
+                    </FormControl>
+                )}
+            />
+
+            {/* Disclosure Consent */}
+            <CustomFormField
+                fieldType={FormFieldType.CHECKBOX}
+                control={form.control}  
+                name = "disclosureConsent"
+                label = "I consent to disclosure of information"
+                renderSkeleton={(field) => (
+                    <FormControl>
+                        <FileUploader files={field.value} onChange={field.onChange} />    
+                    </FormControl>
+                )}
+            />
+
+            <CustomFormField
+                fieldType={FormFieldType.CHECKBOX}
+                control={form.control}  
+                name = "privacyConsent"
+                label = "I consent to privacy policy"
+                renderSkeleton={(field) => (
+                    <FormControl>
+                        <FileUploader files={field.value} onChange={field.onChange} />    
+                    </FormControl>
+                )}
+
+            />
 
 
-    
             <SubmitButton isLoading={isLoading}>
                 Get Started
             </SubmitButton>
