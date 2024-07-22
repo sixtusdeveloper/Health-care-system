@@ -21,11 +21,11 @@ export const createUser = async (user: CreateUserParams) => {
 
     } catch (error: any) {
         if(error && error?.code === 409){
-            const documents = await users.list([
+            const existingUser = await users.list([
               Query.equal('email', [user.email])
             ])
 
-            return documents?.users[0];
+            return existingUser?.users[0];
         }
 
 
@@ -45,30 +45,31 @@ export const getUser = async (userId: string) => {
 
 export const registerPatient = async ({ identificationDocument, ...patient}: RegisterUserParams) => {
     try {
-    let file;
-    if(identificationDocument){
-        const inputFile = InputFile.fromBuffer(
-            identificationDocument?.get('blobFile') as Blob,
-            identificationDocument?.get('fileName') as string,
-        );
-        file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
-    } 
-    const newPatient = await databases.createDocument(
-        DATABASE_ID!,
-        PATIENT_COLLECTION_ID!,
-        ID.unique(),
-        {
-            identificationDocumentId: file?.$id || null,
-            identificationDocumentUrl: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/$
-            {file?.$id}/view?project=${PROJECT_ID}`,
-            ...patient
+        let file;
+        if(identificationDocument){
+            const inputFile = InputFile.fromBuffer(
+                identificationDocument?.get('blobFile') as Blob,
+                identificationDocument?.get('fileName') as string,
+            );
+
+            file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
         } 
-        // Add an empty object as the fourth argument
-    );
-    return parseStringify(newPatient);
-   }
+        const newPatient = await databases.createDocument(
+            DATABASE_ID!,
+            PATIENT_COLLECTION_ID!,
+            ID.unique(),
+            {
+                identificationDocumentId: file?.$id || null,
+                identificationDocumentUrl: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/$
+                {file?.$id}/view?project=${PROJECT_ID}`,
+                ...patient
+            } 
+            // Add an empty object as the fourth argument
+        );
+        return parseStringify(newPatient);
+    }
    // Catch Block
-    catch (error: any) {
+    catch (error) {
         console.log(error);
     }
 }

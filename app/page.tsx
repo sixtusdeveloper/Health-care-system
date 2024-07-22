@@ -21,7 +21,7 @@ export default function Home() {
 
            <PatientForm />
 
-           <div className="text-14-regular mt-20 flex justify-between">
+           <div className="text-14-regular mt-10 md:pb-6 pb-4 flex justify-between">
             <p className="justify-items-end text-dark-600 xl:text-left">&copy; 2024 developed by Sixtusdev</p>
             <Link href="/?admin=true" className="text-green-500 ">
              Admin

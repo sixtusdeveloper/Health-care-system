@@ -13,12 +13,14 @@ import CustomFormField from "@/components/CustomFormField";
 import { createUser, registerPatient } from '@/lib/actions/patient.actions';
 import { FormFieldType } from './PatientForm';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Label } from '@radix-ui/react-label';
+import { Label } from "@/components/ui/label";
 import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues } from '@/constants/index';
 import SubmitButton from "../SubmitButton";
 import { SelectItem } from "@/components/ui/select";
 import Image from 'next/image'; // Import the correct component for the Image element
 import FileUploader from '../FileUploader';
+import "react-datepicker/dist/react-datepicker.css";
+import "react-phone-number-input/style.css";
 
 
 
@@ -31,7 +33,7 @@ const RegisterForm = ({ user }: { user: User}) => {
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {
-        ...PatientFormDefaultValues,
+      ...PatientFormDefaultValues,
       name: "",
       email: "",
       phone: "",
@@ -43,14 +45,19 @@ const RegisterForm = ({ user }: { user: User}) => {
     setIsLoading(true);
 
     let formData;
-    if(values.identificationDocument && values.identificationDocument.length > 0) {
-      const blobFile = new Blob([values.identificationDocument[0]], { type: values.identificationDocument[0].type });
-     
-        formData = new FormData();
-        formData.append('blobFile', blobFile);
-        formData.append('fileName', values.identificationDocument[0].name);
+    if (
+      values.identificationDocument &&
+      values.identificationDocument?.length > 0
+    ) {
+      const blobFile = new Blob([values.identificationDocument[0]], {
+        type: values.identificationDocument[0].type,
+      });
+
+      formData = new FormData();
+      formData.append("blobFile", blobFile);
+      formData.append("fileName", values.identificationDocument[0].name);
     }
-    
+
     try {
       // Your submit logic here
       const patientData = {
@@ -299,7 +306,7 @@ const RegisterForm = ({ user }: { user: User}) => {
                 <h2 className="sub-header">Identification and Verification</h2>
                 </div>
             </section>
-            
+             
             {/* Identification Types*/}
             <CustomFormField
                 fieldType={FormFieldType.SELECT}
@@ -322,7 +329,7 @@ const RegisterForm = ({ user }: { user: User}) => {
                 control={form.control}  
                 name = "identificationNumber"
                 label = "Identification Number"
-                placeholder = "0123456789"
+                placeholder = "40311156034"
             />
             
             <CustomFormField
@@ -357,7 +364,7 @@ const RegisterForm = ({ user }: { user: User}) => {
                     </FormControl>
                 )}
             />
-
+             
             {/* Disclosure Consent */}
             <CustomFormField
                 fieldType={FormFieldType.CHECKBOX}
