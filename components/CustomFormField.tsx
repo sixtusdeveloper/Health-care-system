@@ -39,15 +39,14 @@ interface CustomProps {
     iconSrc?: string,
     iconAlt?: string,
     disabled?: boolean,
-    dateFormate?: string,
+    dateFormat?: string, // Added 'dateFormat' property
     showTimeSelect?: boolean,
     children?: React.ReactNode,
     renderSkeleton?: (field: any) => React.ReactNode,
-
 }
 
 const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
-   const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormate, renderSkeleton } = props;
+   const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormat, renderSkeleton } = props;
 
     switch (fieldType) {
         case FormFieldType.INPUT:
@@ -114,8 +113,9 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                         <DatePicker 
                             selected={field.value}
                             onChange={(date) => field.onChange(date)}
-                            dateFormat={dateFormate ?? "MM/dd/yyyy"}
+                            dateFormat={dateFormat ?? "MM/dd/yyyy"}
                             showTimeSelect={showTimeSelect ?? false}
+                            timeInputLabel="Time:"
                             wrapperClassName="date-picker"
                         />
                     </FormControl>
@@ -141,10 +141,8 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
             ); 
             // case FormFieldType.SKELETON:
         case FormFieldType.SKELETON:  
-            return(
-                renderSkeleton ? renderSkeleton(field) : null
-            )   
-          
+            return renderSkeleton ? renderSkeleton(field) : null
+            // case FormFieldType.CHECKBOX:
         case FormFieldType.CHECKBOX:
             return (
                 <FormControl>
